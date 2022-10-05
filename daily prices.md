@@ -133,3 +133,60 @@ GROUP BY ticker;
 | ------ | ----------- | ------------ |
 | BTC    | 1702        | 1702         |
 | ETH    | 1702        | 1702         |
+
+<br/>
+
+**8. How many days from the trading.prices table exist where the high price of Bitcoin is over $30,000?**
+
+````sql
+
+SELECT 
+  COUNT(*) AS "row_count"
+FROM trading.prices
+WHERE ticker = 'BTC' AND high > 30000.00; 
+
+````
+
+| row_count |
+| --------- |
+| 240       |
+
+<br/>
+
+**9. How many "breakout" days were there in 2020 where the price column is greater than the open column for each ticker?**
+
+````sql
+
+SELECT 
+  ticker,
+  COUNT(*) AS breakout_days    
+FROM trading.prices
+WHERE DATE_PART('year', market_date) = '2020' AND price > open
+GROUP BY ticker;
+
+````
+
+| ticker | breakout_days |
+| ------ | ------------- |
+| BTC    | 207           |
+| ETH    | 200           |
+
+<br/>
+
+**10. How many "non_breakout" days were there in 2020 where the price column is less than the open column for each ticker?**
+
+````sql
+
+SELECT 
+  ticker,
+  COUNT(*) AS non_breakout_days   
+FROM trading.prices
+WHERE DATE_PART('year', market_date) = '2020' AND price < open
+GROUP BY ticker;
+
+````
+
+| ticker | non_breakout_days |
+| ------ | ----------------- |
+| BTC    | 159               |
+| ETH    | 166               |
