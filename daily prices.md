@@ -120,7 +120,16 @@ GROUP BY DATE_TRUNC('month', market_date);
 
 ````sql
 
-
-
+SELECT 
+  ticker,
+  COUNT(market_date) AS total_count,
+  COUNT(DISTINCT market_date) AS unique_count
+FROM trading.prices
+GROUP BY ticker; 
 
 ````
+
+| ticker | total_count | unique_count |
+| ------ | ----------- | ------------ |
+| BTC    | 1702        | 1702         |
+| ETH    | 1702        | 1702         |
