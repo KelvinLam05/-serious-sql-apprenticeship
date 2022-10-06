@@ -190,3 +190,25 @@ GROUP BY ticker;
 | ------ | ----------------- |
 | BTC    | 159               |
 | ETH    | 166               |
+
+<br/>
+
+**11. What percentage of days in 2020 were breakout days vs non-breakout days? Round the percentages to 2 decimal places**
+
+````sql
+
+SELECT 
+  ticker,
+  ROUND(SUM(CASE WHEN price > open THEN 1 ELSE 0 END) :: NUMERIC / COUNT(*), 2) AS breakout_percentage,
+  ROUND(SUM(CASE WHEN price < open THEN 1 ELSE 0 END) :: NUMERIC / COUNT(*), 2) AS non_breakout_percentage
+FROM trading.prices 
+WHERE DATE_PART('year', market_date) = '2020'
+GROUP BY ticker;
+
+````
+
+| ticker | breakout_percentage | non_breakout_percentage |
+| ------ | ------------------- | ----------------------- |
+| BTC    | 0.57                | 0.43                    |
+| ETH    | 0.55                | 0.45                    |
+
