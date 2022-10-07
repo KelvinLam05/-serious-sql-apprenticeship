@@ -109,3 +109,77 @@ ORDER BY avg_ethereum_value DESC;
 | Asia          | 5011670.977699016  | 8933.45985329593   |
 | India         | 6276426.4827863695 | 8036.397545181011  |
 | Africa        | 2183933.338270428  | 3899.8809611971938 |
+
+<br/>
+
+**5. What is the average value of each Ethereum portfolio in each region? Sort this output in descending order**
+
+````sql
+
+WITH ethereum_quantity_cte AS
+(
+
+SELECT
+  ticker,
+  region,
+  SUM(CASE WHEN txn_type = 'BUY' THEN quantity ELSE 0 END) - SUM(CASE WHEN txn_type = 'SELL' THEN quantity ELSE 0 END) AS ethereum_quantity
+FROM trading.members
+JOIN trading.transactions USING(member_id)
+WHERE ticker = 'ETH'
+GROUP BY 
+  ticker,	
+  region
+  
+),
+
+price_cte AS
+(
+
+SELECT
+  ticker,
+  price
+FROM trading.prices
+WHERE ticker = 'ETH' AND market_date = '2021-08-29'
+  
+),
+
+ethereum_value_cte AS
+(
+
+SELECT
+  region,
+  ethereum_quantity * price AS ethereum_value
+FROM ethereum_quantity_cte e
+JOIN price_cte p USING(ticker)
+
+),
+
+mentor_count_cte AS
+(
+ 
+SELECT
+  region,
+  COUNT(*) AS mentor_count
+FROM trading.members
+GROUP BY region
+
+)
+
+SELECT
+  region,
+  ethereum_value,
+  mentor_count,
+  ethereum_value / mentor_count AS avg_ethereum_value
+FROM ethereum_value_cte
+JOIN mentor_count_cte USING(region)
+ORDER BY avg_ethereum_value DESC;
+
+````
+
+| region        | ethereum_value     | mentor_count | avg_ethereum_value |
+| ------------- | ------------------ | ------------ | ------------------ |
+| Australia     | 40076021.09227068  | 4            | 10019005.27306767  |
+| United States | 50688412.2772533   | 7            | 7241201.753893329  |
+| India         | 6276426.4827863695 | 1            | 6276426.4827863695 |
+| Asia          | 5011670.977699016  | 1            | 5011670.977699016  |
+| Africa        | 2183933.338270428  | 1            | 2183933.338270428  |
