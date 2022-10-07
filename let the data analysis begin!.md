@@ -62,3 +62,50 @@ LIMIT 3;
 
 **4. What is total value of all Ethereum portfolios for each region at the end date of our analysis? Order the output by descending portfolio value**
 
+````sql
+
+WITH ethereum_quantity_cte AS
+(
+
+SELECT
+  ticker,
+  region,
+  SUM(CASE WHEN txn_type = 'BUY' THEN quantity ELSE 0 END) - SUM(CASE WHEN txn_type = 'SELL' THEN quantity ELSE 0 END) AS ethereum_quantity,
+  AVG(CASE WHEN txn_type = 'BUY' THEN quantity ELSE 0 END) - AVG(CASE WHEN txn_type = 'SELL' THEN quantity ELSE 0 END) AS avg_ethereum_quantity
+FROM trading.members
+JOIN trading.transactions USING(member_id)
+WHERE ticker = 'ETH'
+GROUP BY 
+  ticker,	
+  region
+  
+),
+
+price_cte AS
+(
+
+SELECT
+  ticker,
+  price
+FROM trading.prices
+WHERE ticker = 'ETH' AND market_date = '2021-08-29'
+  
+)
+
+SELECT
+  region,
+  ethereum_quantity * price AS ethereum_value,
+  avg_ethereum_quantity * price AS avg_ethereum_value
+FROM ethereum_quantity_cte e
+JOIN price_cte p USING(ticker)
+ORDER BY avg_ethereum_value DESC;
+
+````
+
+| region        | ethereum_value     | avg_ethereum_value |
+| ------------- | ------------------ | ------------------ |
+| Australia     | 40076021.09227068  | 10752.890016707992 |
+| United States | 50688412.2772533   | 10549.097248127637 |
+| Asia          | 5011670.977699016  | 8933.45985329593   |
+| India         | 6276426.4827863695 | 8036.397545181011  |
+| Africa        | 2183933.338270428  | 3899.8809611971938 |
