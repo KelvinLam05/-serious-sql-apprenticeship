@@ -58,3 +58,7 @@ LIMIT 3;
 | Leah       | 4046.0908966725733 |
 | Ayush      | 3945.198083260503  |
 
+<br/>
+
+**4. What is total value of all Ethereum portfolios for each region at the end date of our analysis? Order the output by descending portfolio value**
+
